@@ -1,16 +1,16 @@
 package de.unknowncity.papertemplateplugin.configuration;
 
-import de.unknowncity.astralib.common.configuration.ApplicableAstraConfiguration;
-import de.unknowncity.astralib.common.configuration.setting.defaults.DataBaseSetting;
+import de.unknowncity.astralib.common.configuration.YamlAstraConfiguration;
+import de.unknowncity.astralib.common.configuration.setting.defaults.ModernDataBaseSetting;
+import de.unknowncity.astralib.libs.com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TemplateConfiguration extends ApplicableAstraConfiguration  {
-    private final DataBaseSetting databaseSetting;
+public class TemplateConfiguration extends YamlAstraConfiguration {
 
-    public TemplateConfiguration(DataBaseSetting databaseSetting) {
-        this.databaseSetting = databaseSetting;
-    }
+    @JsonProperty
+    private ModernDataBaseSetting databaseSetting = new ModernDataBaseSetting();
 
-    public DataBaseSetting databaseSetting() {
+
+    public ModernDataBaseSetting databaseSetting() {
         return databaseSetting;
     }
 }

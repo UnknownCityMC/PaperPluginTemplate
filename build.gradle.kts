@@ -7,8 +7,8 @@ import java.net.http.HttpResponse
 
 plugins {
     id("java")
-    id("com.gradleup.shadow") version "8.3.2"
-    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
+    id("com.gradleup.shadow") version "8.3.5"
+    id("de.eldoria.plugin-yml.bukkit") version "0.6.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id("de.nilsdruyen.gradle-ftp-upload-plugin") version "0.4.2"
 }
@@ -16,14 +16,15 @@ plugins {
 group = "de.unknowncity"
 version = "0.1.0"
 
-// REPLACE UCPaperTemplatePlugin with the plugin name!
-val mainClass = "${group}.${rootProject.name.lowercase()}.UCPaperTemplatePlugin"
+// REPLACE PaperTemplatePlugin with the plugin name!
+val mainClass = "${group}.${rootProject.name.lowercase()}.PaperTemplatePlugin"
 val shadeBasePath = "${group}.${rootProject.name.lowercase()}.libs."
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.unknowncity.de/snapshots")
+    maven("https://repo.unknowncity.de/releases")
     maven("https://jitpack.io")
     maven("https://repo.xenondevs.xyz/releases")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
@@ -39,9 +40,6 @@ repositories {
 
 dependencies {
 
-    // Config library
-    bukkitLibrary("org.spongepowered", "configurate-yaml", "4.1.2")
-
     // Command library
     bukkitLibrary("org.incendo", "cloud-paper", "2.0.0-beta.9")
     bukkitLibrary("org.incendo", "cloud-minecraft-extras", "2.0.0-beta.9")
@@ -52,7 +50,7 @@ dependencies {
     bukkitLibrary("de.chojo.sadu", "sadu-datasource", "2.2.1")
     bukkitLibrary("de.chojo.sadu", "sadu-updater", "2.2.1")
 
-    // Config
+
     // User interface library
     // implementation("xyz.xenondevs.invui", "invui", "1.37")
 
@@ -62,9 +60,9 @@ dependencies {
     // Placeholder api
     //compileOnly("me.clip", "placeholderapi", "2.11.6")
 
-    compileOnly("de.unknowncity.astralib", "astralib-paper", "0.3.0-SNAPSHOT")
+    compileOnly("de.unknowncity.astralib", "astralib-paper-api", "0.5.0-SNAPSHOT")
 
-    compileOnly("io.papermc.paper", "paper-api", "1.21-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper", "paper-api", "1.21.1-R0.1-SNAPSHOT")
 }
 
 bukkit {
@@ -112,12 +110,13 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.21")
+        minecraftVersion("1.21.1")
+
+        jvmArgs("-Dcom.mojang.eula.agree=true")
 
         downloadPlugins {
             // ADD plugins needed for testing
             // E.g: url("https://github.com/EssentialsX/Essentials/releases/download/2.20.1/EssentialsX-2.20.1.jar")
-            jvmArgs("-Dcom.mojang.eula.agree=true")
         }
     }
 
