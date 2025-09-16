@@ -7,7 +7,7 @@ import java.net.http.HttpResponse
 
 plugins {
     id("java")
-    id("com.gradleup.shadow") version "8.3.5"
+    id("com.gradleup.shadow") version "9.0.0"
     id("de.eldoria.plugin-yml.bukkit") version "0.6.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id("de.nilsdruyen.gradle-ftp-upload-plugin") version "0.4.2"
@@ -17,7 +17,7 @@ group = "de.unknowncity"
 version = "0.1.0"
 
 // REPLACE PaperTemplatePlugin with the plugin name!
-val mainClass = "${group}.${rootProject.name.lowercase()}.PaperTemplatePlugin"
+val mainClass = "${group}.${rootProject.name.lowercase()}.${project.name}Plugin"
 val shadeBasePath = "${group}.${rootProject.name.lowercase()}.libs."
 
 repositories {
@@ -40,17 +40,6 @@ repositories {
 
 dependencies {
 
-    // Command library
-    bukkitLibrary("org.incendo", "cloud-paper", "2.0.0-beta.9")
-    bukkitLibrary("org.incendo", "cloud-minecraft-extras", "2.0.0-beta.9")
-
-    // Database
-    bukkitLibrary("de.chojo.sadu", "sadu-queries", "2.2.1")
-    bukkitLibrary("de.chojo.sadu", "sadu-mariadb", "2.2.1")
-    bukkitLibrary("de.chojo.sadu", "sadu-datasource", "2.2.1")
-    bukkitLibrary("de.chojo.sadu", "sadu-updater", "2.2.1")
-
-
     // User interface library
     // implementation("xyz.xenondevs.invui", "invui", "1.37")
 
@@ -60,14 +49,14 @@ dependencies {
     // Placeholder api
     //compileOnly("me.clip", "placeholderapi", "2.11.6")
 
-    compileOnly("de.unknowncity.astralib", "astralib-paper-api", "0.5.0-SNAPSHOT")
+    compileOnly("de.unknowncity.astralib", "astralib-paper-api", "0.6.0-SNAPSHOT")
 
-    compileOnly("io.papermc.paper", "paper-api", "1.21.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper", "paper-api", "1.21.8-R0.1-SNAPSHOT")
 }
 
 bukkit {
     // REPLACE PaperTemplatePlugin with the plugin name!
-    name = "UC-PaperTemplatePlugin"
+    name = "UC-${project.name}"
     version = "${rootProject.version}"
 
     // REPLACE with fitting description
@@ -139,7 +128,7 @@ tasks {
             .POST(HttpRequest.BodyPublishers.ofString("{ \"signal\": \"restart\"}"))
             .build()
 
-        HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
     }
 
     register<Copy>("copyToServer") {
