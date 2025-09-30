@@ -35,7 +35,7 @@ public class PaperTemplatePlugin extends PaperAstraPlugin {
 
         var localization = Localization.builder(getDataPath().resolve("lang")).buildAndLoad();
 
-        this.messenger = PaperMessenger.builder(localization)
+        this.messenger = PaperMessenger.builder(localization, getPluginMeta())
                 .withDefaultLanguage(defaultLang)
                 .withLanguageService(languageService)
                 .withPlaceHolderAPI(hookRegistry.getRegistered(PlaceholderApiHook.class))

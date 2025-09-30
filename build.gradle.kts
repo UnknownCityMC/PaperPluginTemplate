@@ -1,9 +1,6 @@
-import de.nilsdruyen.gradle.ftp.UploadExtension
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import org.gradle.internal.impldep.com.jcraft.jsch.ChannelSftp
+import org.gradle.internal.impldep.com.jcraft.jsch.JSch
 
 plugins {
     id("java")
@@ -29,6 +26,7 @@ repositories {
     maven("https://repo.xenondevs.xyz/releases")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://repo.nightexpressdev.com/releases")
     maven {
         url = uri("https://repo.unknowncity.de/private")
         credentials (PasswordCredentials::class) {
@@ -41,21 +39,27 @@ repositories {
 dependencies {
 
     // User interface library
-    // implementation("xyz.xenondevs.invui", "invui", "1.37")
+    implementation("xyz.xenondevs.invui", "invui", "2.0.0-alpha.19")
 
     // Economy system
-    //compileOnly("su.nightexpress.coinsengine", "CoinsEngine", "2.3.3")
-
-    // Placeholder api
-    //compileOnly("me.clip", "placeholderapi", "2.11.6")
+    compileOnly("su.nightexpress.coinsengine", "CoinsEngine", "2.5.0")
 
     compileOnly("de.unknowncity.astralib", "astralib-paper-api", "0.6.0-SNAPSHOT")
 
     compileOnly("io.papermc.paper", "paper-api", "1.21.8-R0.1-SNAPSHOT")
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.github.mwiede:jsch:2.27.3")
+    }
+}
+
 bukkit {
-    // REPLACE PaperTemplatePlugin with the plugin name!
     name = "UC-${project.name}"
     version = "${rootProject.version}"
 
@@ -99,7 +103,7 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.21.1")
+        minecraftVersion("1.21.8")
 
         jvmArgs("-Dcom.mojang.eula.agree=true")
 
@@ -109,35 +113,31 @@ tasks {
         }
     }
 
-    configure<UploadExtension> {
-        host = System.getenv("UC_FTP_HOST").orEmpty()
-        port = (System.getenv("UC_FTP_PORT") ?: "0").toInt()
-        username = System.getenv("UC_FTP_THAUPT_USR").orEmpty()
-        password = System.getenv("UC_FTP_THAUPT_PWD").orEmpty()
-        sourceDir = "${rootProject.layout.buildDirectory}/libs"
-        targetDir = "/plugins/"
-    }
+    register("uploadJarToFTP") {
+        dependsOn(shadowJar)
+        doLast {
+            val jarFile = getByName("shadowJar").outputs.files.singleFile
 
-    register("deployToTestServer") {
-        dependsOn(uploadFilesToFtp)
-        println("Restarting server...")
-        val request = HttpRequest.newBuilder(URI.create("https://panel.unknowncity.de/api/client/servers/f3eb8390/power"))
-            .header("Accept", "applcation/json")
-            .header("Content-Type", "applcation/json")
-            .header("Authorization", "Bearer ${System.getenv("UC_PANEL_API_TOKEN")}")
-            .POST(HttpRequest.BodyPublishers.ofString("{ \"signal\": \"restart\"}"))
-            .build()
+            val host = System.getenv("FTP_SERVER")!!
+            val port = System.getenv("FTP_PORT")?.toInt() ?: 22
+            val user = System.getenv("FTP_USER")!!
+            val password = System.getenv("FTP_PASSWORD")!!
 
-        HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
-    }
+            val jsch = JSch()
+            val session = jsch.getSession(user, host, port).apply {
+                setPassword(password)
+                setConfig("StrictHostKeyChecking", "no")
+                connect()
+            }
 
-    register<Copy>("copyToServer") {
-        val path = System.getenv("SERVER_DIR")
-        if (path.toString().isEmpty()) {
-            println("No SERVER_DIR env variable set")
-            return@register
+            val channel = session.openChannel("sftp") as ChannelSftp
+            channel.connect()
+            channel.cd("/plugins")
+            channel.put(jarFile.absolutePath, jarFile.name)
+            println("Upload successful!")
+
+            channel.disconnect()
+            session.disconnect()
         }
-        from(shadowJar)
-        destinationDir = File(path.toString())
     }
 }
