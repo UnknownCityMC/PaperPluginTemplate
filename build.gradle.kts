@@ -34,6 +34,8 @@ dependencies {
     implementation(libs.invui)
     compileOnly(libs.astralib)
     compileOnly(libs.paper)
+    implementation(libs.ocular)
+    implementation(libs.jackson.yaml)
 }
 
 bukkit {
@@ -77,6 +79,9 @@ tasks {
         fun relocateDependency(from : String) = relocate(from, "$shadeBasePath$from")
 
         relocateDependency("xyz.xenondevs.invui")
+        relocateDependency("dev.chojo.ocular")
+        relocateDependency("tools.jackson")
+        relocateDependency("com.fasterxml.jackson")
     }
 
     runServer {

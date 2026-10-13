@@ -5,12 +5,17 @@ import de.unknowncity.astralib.common.service.ServiceRegistry;
 import de.unknowncity.astralib.paper.api.hook.defaulthooks.PlaceholderApiHook;
 import de.unknowncity.astralib.paper.api.message.PaperMessenger;
 import de.unknowncity.astralib.paper.api.plugin.PaperAstraPlugin;
-import de.unknowncity.papertemplateplugin.configuration.TemplateConfiguration;
+import de.unknowncity.papertemplateplugin.config.ExampleConfiguration;
+import dev.chojo.ocular.Configurations;
+import dev.chojo.ocular.dataformats.YamlDataFormat;
+import dev.chojo.ocular.key.Key;
+
+import java.nio.file.Path;
 
 public class PaperTemplatePlugin extends PaperAstraPlugin {
     private ServiceRegistry<PaperTemplatePlugin> serviceRegistry;
-    private TemplateConfiguration configuration;
     private PaperMessenger messenger;
+    private Configurations<ExampleConfiguration> config;
 
     @Override
     public void onPluginEnable() {
@@ -25,9 +30,10 @@ public class PaperTemplatePlugin extends PaperAstraPlugin {
     }
 
     public void initConfiguration() {
-        var configOpt = TemplateConfiguration.loadFromFile(TemplateConfiguration.class);
-        this.configuration = configOpt.orElseGet(TemplateConfiguration::new);
-        this.configuration.save();
+        var configKey = Key.builder(Path.of("config.yml"), ExampleConfiguration::new).build();
+        config = Configurations.builder(configKey, new YamlDataFormat())
+                .setBase(Path.of(""))
+                .build();
     }
 
     private void initializeMessenger() {
@@ -38,7 +44,7 @@ public class PaperTemplatePlugin extends PaperAstraPlugin {
         this.messenger = PaperMessenger.builder(localization, getPluginMeta())
                 .withDefaultLanguage(defaultLang)
                 .withLanguageService(languageService)
-                .withPlaceHolderAPI(hookRegistry.getRegistered(PlaceholderApiHook.class))
+                .withPlaceHolderAPI(hookRegistry.getRegistered(PlaceholderApiHook.class).orElse(null))
                 .build();
     }
 
@@ -48,5 +54,9 @@ public class PaperTemplatePlugin extends PaperAstraPlugin {
 
     public PaperMessenger messenger() {
         return messenger;
+    }
+
+    public Configurations<ExampleConfiguration> config() {
+        return config;
     }
 }
