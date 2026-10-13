@@ -1,0 +1,25 @@
+[versions]
+minecraft = "26.3"
+
+paper = "26.3.build.+"
+invui = "2.5.1"
+astralib = "0.8.1-SNAPSHOT"
+ocular = "2.3.0"
+jackson = "3.2.3"
+
+shadow = "9.6.1"
+pluginyml = "0.9.0"
+run = "3.1.0"
+
+[libraries]
+invui = { group = "xyz.xenondevs.invui", name = "invui", version.ref = "invui" }
+astralib = { group = "de.unknowncity.astralib", name = "astralib-paper-api", version.ref = "astralib" }
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
+ocular = { group = "dev.chojo", name = "ocular", version.ref = "ocular" }
+jackson-yaml = { group = "tools.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jackson" }
+jackson-toml = { group = "tools.jackson.dataformat", name = "jackson-dataformat-toml", version.ref = "jackson" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow"}
+pluginyml = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "pluginyml"}
+run = { id = "xyz.jpenilla.run-paper", version.ref = "run"}
