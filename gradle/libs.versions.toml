@@ -4,7 +4,7 @@ minecraft = "26.3"
 paper = "26.3.build.+"
 invui = "2.5.1"
 astralib = "0.8.1-SNAPSHOT"
-ocular = "2.3.0"
+ocular = "2.4.1"
 jackson = "3.2.3"
 
 shadow = "9.6.1"
